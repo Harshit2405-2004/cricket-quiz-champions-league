@@ -1,1 +1,5 @@
+
 project_id = "dkxtdlltiqipohbeavgd"
+
+[functions.reset-daily-attempts]
+verify_jwt = false
