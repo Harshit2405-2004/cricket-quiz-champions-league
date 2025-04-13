@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -61,7 +62,19 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				// Cricket theme colors
+				cricket: {
+					'pitch': '#8BC34A', // Cricket field green
+					'ball': '#E53935', // Cricket ball red
+					'ipl-blue': '#004BA0', // IPL blue
+					'ipl-purple': '#6A1B9A', // IPL purple
+					'stumps': '#795548', // Brown for stumps
+					'boundary': '#FFD54F', // Boundary yellow
 				}
+			},
+			fontFamily: {
+				sans: ['Inter', 'sans-serif'],
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -84,11 +97,21 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'celebrate': {
+					'0%, 100%': { transform: 'scale(1)' },
+					'50%': { transform: 'scale(1.05)' },
+				},
+				'pulse-soft': {
+					'0%, 100%': { opacity: '1' },
+					'50%': { opacity: '0.8' },
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'celebrate': 'celebrate 0.5s ease-in-out',
+				'pulse-soft': 'pulse-soft 2s infinite'
 			}
 		}
 	},
