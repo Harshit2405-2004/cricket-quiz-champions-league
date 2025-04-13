@@ -52,10 +52,11 @@ export const event = ({ action, category, label, value }: {
 // Custom events specific to our app
 export const quizEvents = {
   startQuiz: () => event({ action: 'quiz_started', category: 'engagement' }),
-  completeQuiz: (score: number) => event({ 
+  completeQuiz: (score: number, correctAnswers?: number) => event({ 
     action: 'quiz_completed', 
     category: 'engagement', 
-    value: score 
+    value: score,
+    label: correctAnswers ? `${correctAnswers} correct answers` : undefined
   }),
   answerQuestion: (isCorrect: boolean) => event({ 
     action: 'question_answered', 
