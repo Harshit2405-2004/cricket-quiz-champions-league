@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,12 +19,12 @@ import { Badge } from "@/components/ui/badge";
 import { Trophy, Award, Share2, Clock, Gift } from "lucide-react";
 import Layout from "@/components/Layout";
 import { useToast } from "@/hooks/use-toast";
+import { referralEvents, rewardEvents } from "@/lib/analytics";
 
 const Profile = () => {
   const [activeTab, setActiveTab] = useState("stats");
   const { toast } = useToast();
   
-  // In a real app, this would come from authentication and database
   const userProfile = {
     name: "Cricket Fan",
     email: "fan@cricketquiz.com",
@@ -49,24 +48,79 @@ const Profile = () => {
   
   const handleCopyReferral = () => {
     navigator.clipboard.writeText(userProfile.referralCode);
+    referralEvents.copyReferral();
     toast({
       title: "Copied!",
       description: "Referral code copied to clipboard",
     });
   };
   
+  const handleViewReward = (rewardName: string) => {
+    rewardEvents.viewReward(rewardName);
+  };
+  
+  const handleClaimReward = (rewardName: string, pointsCost: number) => {
+    rewardEvents.claimReward(rewardName, pointsCost);
+  };
+  
+  const renderRewards = () => (
+    <TabsContent value="rewards">
+      <Card>
+        <CardHeader>
+          <CardTitle>Your Rewards</CardTitle>
+          <CardDescription>
+            Track your redeemed and available rewards
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {userProfile.rewards.map((reward, index) => (
+              <div 
+                key={index} 
+                className="p-4 border rounded-lg flex items-center justify-between"
+                onClick={() => handleViewReward(reward.name)}
+              >
+                <div className="flex items-center gap-3">
+                  <Gift className="text-cricket-ipl-purple" />
+                  <div>
+                    <p className="font-semibold">{reward.name}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {reward.points} points
+                      {reward.status === "redeemed" && reward.date && 
+                        ` • Redeemed on ${reward.date}`}
+                    </p>
+                  </div>
+                </div>
+                
+                <Badge variant={reward.status === "available" ? "outline" : "secondary"}>
+                  {reward.status === "available" ? "Available" : "Redeemed"}
+                </Badge>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+        <CardFooter className="flex justify-between">
+          <p className="text-sm text-muted-foreground">
+            You have {userProfile.totalPoints} points available
+          </p>
+          <Button onClick={() => handleViewReward("Reward Store")}>
+            <Gift size={16} className="mr-2" />
+            View Reward Store
+          </Button>
+        </CardFooter>
+      </Card>
+    </TabsContent>
+  );
+  
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
-          {/* Profile Header */}
           <div className="mb-8 flex flex-col sm:flex-row items-center sm:items-start gap-6">
-            {/* Avatar */}
             <div className="w-24 h-24 rounded-full bg-cricket-ipl-blue flex items-center justify-center text-white text-4xl font-bold">
               {userProfile.name.charAt(0)}
             </div>
             
-            {/* Profile Info */}
             <div className="flex-1 text-center sm:text-left">
               <h1 className="text-2xl md:text-3xl font-bold">{userProfile.name}</h1>
               <p className="text-muted-foreground mb-4">{userProfile.email}</p>
@@ -127,7 +181,6 @@ const Profile = () => {
             </div>
           </div>
           
-          {/* Tabs Content */}
           <Tabs
             defaultValue="stats"
             value={activeTab}
@@ -195,51 +248,7 @@ const Profile = () => {
               </Card>
             </TabsContent>
             
-            <TabsContent value="rewards">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Your Rewards</CardTitle>
-                  <CardDescription>
-                    Track your redeemed and available rewards
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {userProfile.rewards.map((reward, index) => (
-                      <div 
-                        key={index} 
-                        className="p-4 border rounded-lg flex items-center justify-between"
-                      >
-                        <div className="flex items-center gap-3">
-                          <Gift className="text-cricket-ipl-purple" />
-                          <div>
-                            <p className="font-semibold">{reward.name}</p>
-                            <p className="text-sm text-muted-foreground">
-                              {reward.points} points
-                              {reward.status === "redeemed" && reward.date && 
-                                ` • Redeemed on ${reward.date}`}
-                            </p>
-                          </div>
-                        </div>
-                        
-                        <Badge variant={reward.status === "available" ? "outline" : "secondary"}>
-                          {reward.status === "available" ? "Available" : "Redeemed"}
-                        </Badge>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-                <CardFooter className="flex justify-between">
-                  <p className="text-sm text-muted-foreground">
-                    You have {userProfile.totalPoints} points available
-                  </p>
-                  <Button>
-                    <Gift size={16} className="mr-2" />
-                    View Reward Store
-                  </Button>
-                </CardFooter>
-              </Card>
-            </TabsContent>
+            {renderRewards()}
           </Tabs>
         </div>
       </div>

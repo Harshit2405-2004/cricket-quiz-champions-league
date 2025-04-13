@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import QuizCard, { QuizQuestion } from "@/components/QuizCard";
@@ -7,8 +6,8 @@ import { Progress } from "@/components/ui/progress";
 import { Trophy, Clock } from "lucide-react";
 import Layout from "@/components/Layout";
 import { useToast } from "@/hooks/use-toast";
+import { quizEvents } from "@/lib/analytics";
 
-// Sample quiz data - in a real app this would come from an API
 const sampleQuizzes: QuizQuestion[] = [
   {
     id: 1,
@@ -60,9 +59,12 @@ const Quiz = () => {
     setCurrentQuestionIndex(0);
     setCorrectAnswers(0);
     setQuizCompleted(false);
+    quizEvents.startQuiz();
   };
 
   const handleAnswer = (isCorrect: boolean) => {
+    quizEvents.answerQuestion(isCorrect);
+    
     if (isCorrect) {
       setCorrectAnswers(correctAnswers + 1);
     }
@@ -75,17 +77,13 @@ const Quiz = () => {
   };
 
   const handleQuizComplete = () => {
-    // Reset quiz state
     setQuizStarted(false);
     setCurrentQuestionIndex(0);
     setCorrectAnswers(0);
     setQuizCompleted(false);
-    
-    // Decrease attempts
     setAttemptsRemaining(attemptsRemaining - 1);
   };
 
-  // Calculate score
   const calculateScore = () => {
     const baseScore = correctAnswers * 10;
     const bonusScore = correctAnswers === sampleQuizzes.length ? 20 : 0;
@@ -96,6 +94,8 @@ const Quiz = () => {
     if (quizCompleted) {
       const totalScore = calculateScore();
       const bonusText = correctAnswers === sampleQuizzes.length ? " (including perfect quiz bonus!)" : "";
+      
+      quizEvents.completeQuiz(totalScore);
       
       toast({
         title: "Quiz Completed!",
@@ -112,7 +112,6 @@ const Quiz = () => {
           Daily Cricket Quiz
         </h1>
 
-        {/* Quiz Status and Attempts */}
         <div className="mb-6 flex justify-between items-center max-w-md mx-auto">
           <div className="flex items-center gap-2">
             <Clock size={18} />
