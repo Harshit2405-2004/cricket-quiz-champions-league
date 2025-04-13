@@ -3,3 +3,6 @@ project_id = "dkxtdlltiqipohbeavgd"
 
 [functions.reset-daily-attempts]
 verify_jwt = false
+
+[functions.generate-quiz-questions]
+verify_jwt = true

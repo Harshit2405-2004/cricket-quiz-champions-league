@@ -10,6 +10,7 @@ import Quiz from "./pages/Quiz";
 import Leaderboard from "./pages/Leaderboard";
 import Profile from "./pages/Profile";
 import Auth from "./pages/Auth";
+import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 import { initGA, pageview } from "./lib/analytics";
 import { AuthProvider, useAuth } from "./context/AuthContext";
@@ -68,6 +69,14 @@ const AppRoutes = () => (
           <Profile />
         </PrivateRoute>
       } 
+    />
+    <Route
+      path="/admin"
+      element={
+        <PrivateRoute>
+          <Admin />
+        </PrivateRoute>
+      }
     />
     <Route path="*" element={<NotFound />} />
   </Routes>
