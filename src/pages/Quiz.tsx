@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import QuizCard, { QuizQuestion } from "@/components/QuizCard";
@@ -21,7 +20,6 @@ const Quiz = () => {
   const { toast } = useToast();
   const { profile } = useAuth();
 
-  // Fetch user's daily quiz attempts
   const { data: attemptsData } = useQuery({
     queryKey: ['attempts', profile?.id],
     queryFn: async () => {
@@ -42,7 +40,6 @@ const Quiz = () => {
   
   const attemptsRemaining = attemptsData?.attemptsRemaining || 5;
 
-  // Fetch quiz questions
   const fetchQuizQuestions = async () => {
     try {
       const { data, error } = await supabase
@@ -54,11 +51,10 @@ const Quiz = () => {
       if (error) throw error;
       
       if (data) {
-        // Transform data to match QuizQuestion format
         const formattedQuestions: QuizQuestion[] = data.map(item => {
           const options = item.options as Record<string, string>;
           return {
-            id: Number(item.id.replace(/-/g, '').substring(0, 8), 16), // Convert UUID to number for compatibility
+            id: Number(item.id.replace(/-/g, '').substring(0, 8), 16),
             question: item.question_text,
             options: Object.values(options),
             correctAnswer: Object.keys(options).indexOf(item.correct_option),
@@ -82,7 +78,6 @@ const Quiz = () => {
     }
   };
 
-  // Record quiz attempt and update points
   const updateQuizAttemptMutation = useMutation({
     mutationFn: async (params: { 
       score: number, 
@@ -93,7 +88,6 @@ const Quiz = () => {
       
       const { score, isComplete, answeredQuestions } = params;
       
-      // Update user profile with new attempt and points
       const { error } = await supabase
         .from('profiles')
         .update({ 
@@ -105,7 +99,6 @@ const Quiz = () => {
         
       if (error) throw error;
       
-      // Add to leaderboard if quiz was completed
       if (isComplete) {
         const today = new Date().toISOString().split('T')[0];
         
@@ -180,7 +173,6 @@ const Quiz = () => {
   const handleQuizComplete = () => {
     const score = calculateScore();
     
-    // Record quiz attempt and update points
     updateQuizAttemptMutation.mutate({
       score,
       isComplete: true,
@@ -204,7 +196,7 @@ const Quiz = () => {
       const totalScore = calculateScore();
       const bonusText = correctAnswers === quizQuestions.length ? " (including perfect quiz bonus!)" : "";
       
-      quizEvents.completeQuiz(totalScore);
+      quizEvents.completeQuiz(totalScore, correctAnswers);
       
       toast({
         title: "Quiz Completed!",
